@@ -3,11 +3,13 @@ package com.example.project03_tuwaiqacademy.Controller;
 import com.example.project03_tuwaiqacademy.Api.ApiResponse;
 import com.example.project03_tuwaiqacademy.DTO.CustomerDTO;
 import com.example.project03_tuwaiqacademy.DTO.EmployeeDTO;
+import com.example.project03_tuwaiqacademy.Model.User;
 import com.example.project03_tuwaiqacademy.Service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,15 +27,15 @@ public class AuthController {
     }
 
     //authority -> EMPLOYEE
-    @GetMapping("/get-customers/{employee_id}")
-    public ResponseEntity getAllCustomers(@PathVariable Integer employee_id){
-        return ResponseEntity.status(200).body(authService.getAllCustomers(employee_id));
+    @GetMapping("/get-customers")
+    public ResponseEntity getAllCustomers(@AuthenticationPrincipal User employee){
+        return ResponseEntity.status(200).body(authService.getAllCustomers(employee.getId()));
     }
 
     //authority -> ADMIN
-    @GetMapping("/get-all/{admin_id}")
-    public ResponseEntity getAll(@PathVariable Integer admin_id){
-        return ResponseEntity.status(200).body(authService.getAll(admin_id));
+    @GetMapping("/get-all")
+    public ResponseEntity getAll(@AuthenticationPrincipal User admin){
+        return ResponseEntity.status(200).body(authService.getAll(admin.getId()));
     }
 
     //PERMIT ALL
@@ -51,24 +53,30 @@ public class AuthController {
     }
 
     //authority -> CUSTOMER
-    @PutMapping("/update-customer/{id}")
-    public ResponseEntity updateCustomer(@PathVariable Integer id,@RequestBody@Valid CustomerDTO customerDTO){
-        authService.updateCustomer(id, customerDTO);
+    @PutMapping("/update-customer")
+    public ResponseEntity updateCustomer(@AuthenticationPrincipal User customer,@RequestBody@Valid CustomerDTO customerDTO){
+        authService.updateCustomer(customer.getId(), customerDTO);
         return ResponseEntity.status(200).body(new ApiResponse("customer updated"));
     }
 
     //authority -> EMPLOYEE
-    @PutMapping("/update-employee/{id}")
-    public ResponseEntity updateEmployee(@PathVariable Integer id,@RequestBody@Valid EmployeeDTO employeeDTO){
-        authService.updateEmployee(id, employeeDTO);
+    @PutMapping("/update-employee")
+    public ResponseEntity updateEmployee(@AuthenticationPrincipal User employee,@RequestBody@Valid EmployeeDTO employeeDTO){
+        authService.updateEmployee(employee.getId(), employeeDTO);
         return ResponseEntity.status(200).body(new ApiResponse("customer updated"));
     }
 
     //authority -> ADMIN
-    @DeleteMapping("/delete-user/{admin_id}/user/{user_id}")
-    public ResponseEntity deleteUser(@PathVariable Integer admin_id,@PathVariable Integer user_id){
-        authService.deleteUser(admin_id, user_id);
+    @DeleteMapping("/delete-user/user/{user_id}")
+    public ResponseEntity deleteUser(@AuthenticationPrincipal User admin,@PathVariable Integer user_id){
+        authService.deleteUser(admin.getId(), user_id);
         return ResponseEntity.status(200).body(new ApiResponse("user deleted"));
+    }
+
+    //LOGOUT
+    @GetMapping("/logout")
+    public ResponseEntity logout(){
+        return ResponseEntity.status(200).body(new ApiResponse("logout successfully"));
     }
 
 

@@ -1,9 +1,6 @@
 package com.example.project03_tuwaiqacademy.Repository;
 
 import com.example.project03_tuwaiqacademy.Model.User;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

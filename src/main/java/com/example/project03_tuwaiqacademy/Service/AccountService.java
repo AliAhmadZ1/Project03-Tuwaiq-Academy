@@ -6,8 +6,6 @@ import com.example.project03_tuwaiqacademy.Model.User;
 import com.example.project03_tuwaiqacademy.Repository.AccountRepository;
 import com.example.project03_tuwaiqacademy.Repository.AuthRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.LifecycleState;
-import org.springframework.data.repository.core.support.IncompleteRepositoryCompositionException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -136,6 +134,8 @@ public class AccountService {
         accountRepository.save(account);
     }
 
+
+    // generate account number in format: "xxxx-xxxx-xxxx-xxxx"
     public String generateAccountNumber(){
         Random random = new Random();
         int p1 = random.nextInt(1000,9999);
