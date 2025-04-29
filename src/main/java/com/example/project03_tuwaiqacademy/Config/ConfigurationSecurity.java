@@ -31,15 +31,17 @@ public class ConfigurationSecurity {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain filterChain2(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests()
+//                .requestMatchers("/api/v1/**").permitAll()
+//                .requestMatchers("/api/v1/auth/**").hasAnyAuthority("ADMIN","CUSTOMER","EMPLOYEE")
                 .requestMatchers("/api/v1/auth/assign-admin","/api/v1/auth/register-customer",
-                        "/api/v1/auth/register-employee").permitAll()
+                        "/api/v1/auth/register-employee").permitAll() // ---------------------------------------------
                 .requestMatchers("/api/v1/account/create-account","/api/v1/account/get-account-detail/{account_id}",
                         "/api/v1/account/get-accounts","/api/v1/account/deposit/{account_id}/{amount}",
                         "/api/v1/account/withdraw/{account_id}/{amount}","/api/v1/account/transfer/from/{from}/to/{to}/{amount}",

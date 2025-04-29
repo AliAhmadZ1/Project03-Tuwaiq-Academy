@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 public class MyUserDetailsService implements UserDetailsService {
 
     private final AuthRepository authRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = authRepository.findUserByUsername(username);
         if (user==null)
             throw new ApiException("ERROR wrong username or password");
-        return (UserDetails) user;
+
+        return user;
     }
 }

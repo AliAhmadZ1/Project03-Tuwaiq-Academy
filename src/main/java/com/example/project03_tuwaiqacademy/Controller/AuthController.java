@@ -7,7 +7,6 @@ import com.example.project03_tuwaiqacademy.Model.User;
 import com.example.project03_tuwaiqacademy.Service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
