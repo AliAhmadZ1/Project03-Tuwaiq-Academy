@@ -62,7 +62,7 @@ public class AuthController {
     @PutMapping("/update-employee")
     public ResponseEntity updateEmployee(@AuthenticationPrincipal User employee,@RequestBody@Valid EmployeeDTO employeeDTO){
         authService.updateEmployee(employee.getId(), employeeDTO);
-        return ResponseEntity.status(200).body(new ApiResponse("customer updated"));
+        return ResponseEntity.status(200).body(new ApiResponse("employee updated"));
     }
 
     //authority -> ADMIN

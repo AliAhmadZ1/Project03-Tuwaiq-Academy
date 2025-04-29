@@ -25,8 +25,15 @@ public class AccountService {
         if (customer==null)
             throw new ApiException("customer not found");
 
+        String generatedAccountNumber = generateAccountNumber();
         Account account = new Account();
-        account.setAccount_number(generateAccountNumber());
+        for (Account a:accountRepository.findAll()) {
+            if (a.getAccount_number().equals(generatedAccountNumber)) {
+                generatedAccountNumber = generateAccountNumber();
+                continue;
+            }
+        }
+        account.setAccount_number(generatedAccountNumber);
         account.setBalance(0.0);
         account.setCustomer(customer.getCustomer());
         authRepository.save(customer);

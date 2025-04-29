@@ -13,7 +13,7 @@ public interface AuthRepository extends JpaRepository<User,Integer> {
     User findUserById(Integer id);
 
     @Query("select c from User c where c.role='CUSTOMER'")
-    List<User> findCustomersByEmployee(Integer employee_id);
+    List<User> findCustomersByEmployee();
 
     User findUserByUsername(String username);
 }

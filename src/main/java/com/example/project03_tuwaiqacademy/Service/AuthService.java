@@ -44,7 +44,7 @@ public class AuthService {
         User employee = authRepository.findUserById(employee_id);
         if (employee==null)
             throw new ApiException("no permission only for employees");
-        return authRepository.findCustomersByEmployee(employee_id);
+        return authRepository.findCustomersByEmployee();
     }
 
     //authority -> ADMIN
@@ -111,6 +111,8 @@ public class AuthService {
         employee.setPassword(hashPassword);
         employee.setEmail(employeeDTO.getEmail());
         employee.getEmployee().setPosition(employeeDTO.getPosition());
+
+        authRepository.save(employee);
     }
 
     //authority -> ADMIN
