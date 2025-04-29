@@ -40,14 +40,15 @@ public class ConfigurationSecurity {
                 .authorizeHttpRequests()
 //                .requestMatchers("/api/v1/**").permitAll()
 //                .requestMatchers("/api/v1/auth/**").hasAnyAuthority("ADMIN","CUSTOMER","EMPLOYEE")
-                .requestMatchers("/api/v1/auth/assign-admin","/api/v1/auth/register-customer",
-                        "/api/v1/auth/register-employee").permitAll() // ---------------------------------------------
+                .requestMatchers("/api/v1/auth/assign-admin","/api/v1/customer/register-customer",
+                        "/api/v1/employee/register-employee","/api/v1/employee/get-all").permitAll() // ---------------------------------------------
                 .requestMatchers("/api/v1/account/create-account","/api/v1/account/get-account-detail/{account_id}",
                         "/api/v1/account/get-accounts","/api/v1/account/deposit/{account_id}/{amount}",
                         "/api/v1/account/withdraw/{account_id}/{amount}","/api/v1/account/transfer/from/{from}/to/{to}/{amount}",
-                        "/api/v1/auth/update-customer").hasAuthority("CUSTOMER")
-                .requestMatchers("/api/v1/auth/update-employee","/api/v1/account/activate-account/{account_id}",
-                        "/api/v1/account/block-account/{account_id}","/api/v1/auth/get-customers").hasAuthority("EMPLOYEE")
+                        "/api/v1/customer/update-customer","/api/v1/customer/delete-customer","/api/v1/account/delete-account/{account_id}").hasAuthority("CUSTOMER")
+                .requestMatchers("/api/v1/employee/update-employee","/api/v1/account/activate-account/{account_id}",
+                        "/api/v1/employee/delete-employee",
+                        "/api/v1/account/block-account/{account_id}","/api/v1/customer/get-customers").hasAuthority("EMPLOYEE")
                 .requestMatchers("/api/v1/auth/get-all","/api/v1/auth/delete-user/user/{user_id}").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
