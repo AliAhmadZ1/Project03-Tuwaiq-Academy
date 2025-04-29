@@ -8,6 +8,7 @@ import com.example.project03_tuwaiqacademy.Model.Employee;
 import com.example.project03_tuwaiqacademy.Model.User;
 import com.example.project03_tuwaiqacademy.Repository.AuthRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.PublicKey;
@@ -25,12 +26,16 @@ public class AuthService {
         User assignedAdmin = authRepository.findUserByUsername("ali2025");
         if (assignedAdmin!=null)
             throw new ApiException("admin is already assigned!!");
+
         User user = new User();
         user.setName("Ali");
         user.setUsername("ali2025");
         user.setEmail("ali.alshehri.p@gmail.com");
-        user.setPassword("12345678");
         user.setRole("ADMIN");
+
+        String hashPassword = new BCryptPasswordEncoder().encode("12345678");
+        user.setPassword(hashPassword);
+
         authRepository.save(user);
     }
 
@@ -55,7 +60,8 @@ public class AuthService {
         User user = new User();
         user.setRole("CUSTOMER");
         user.setName(customerDTO.getName());
-        user.setPassword(customerDTO.getPassword());
+        String hashPassword = new BCryptPasswordEncoder().encode(customerDTO.getPassword());
+        user.setPassword(hashPassword);
         user.setEmail(customerDTO.getEmail());
         user.setUsername(customerDTO.getUsername());
 
@@ -69,7 +75,8 @@ public class AuthService {
         User user = new User();
         user.setRole("EMPLOYEE");
         user.setName(employeeDTO.getName());
-        user.setPassword(employeeDTO.getPassword());
+        String hashPassword = new BCryptPasswordEncoder().encode(employeeDTO.getPassword());
+        user.setPassword(hashPassword);
         user.setEmail(employeeDTO.getEmail());
         user.setUsername(employeeDTO.getUsername());
 
@@ -85,7 +92,8 @@ public class AuthService {
             throw new ApiException("customer not found");
         customer.setName(customerDTO.getName());
         customer.setUsername(customerDTO.getUsername());
-        customer.setPassword(customerDTO.getPassword());
+        String hashPassword = new BCryptPasswordEncoder().encode(customerDTO.getPassword());
+        customer.setPassword(hashPassword);
         customer.setEmail(customerDTO.getEmail());
         customer.getCustomer().setPhone_number(customerDTO.getPhone_number());
 
@@ -99,7 +107,8 @@ public class AuthService {
             throw new ApiException("Employee not found");
         employee.setName(employeeDTO.getName());
         employee.setUsername(employeeDTO.getUsername());
-        employee.setPassword(employeeDTO.getPassword());
+        String hashPassword = new BCryptPasswordEncoder().encode(employee.getPassword());
+        employee.setPassword(hashPassword);
         employee.setEmail(employeeDTO.getEmail());
         employee.getEmployee().setPosition(employeeDTO.getPosition());
     }
