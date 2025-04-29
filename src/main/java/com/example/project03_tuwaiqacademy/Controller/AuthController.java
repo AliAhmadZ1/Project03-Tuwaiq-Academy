@@ -25,44 +25,10 @@ public class AuthController {
         return ResponseEntity.status(200).body(new ApiResponse("admin assigned"));
     }
 
-    //authority -> EMPLOYEE
-    @GetMapping("/get-customers")
-    public ResponseEntity getAllCustomers(@AuthenticationPrincipal User employee){
-        return ResponseEntity.status(200).body(authService.getAllCustomers(employee.getId()));
-    }
-
     //authority -> ADMIN
     @GetMapping("/get-all")
     public ResponseEntity getAll(@AuthenticationPrincipal User admin){
         return ResponseEntity.status(200).body(authService.getAll(admin.getId()));
-    }
-
-    //PERMIT ALL
-    @PostMapping("/register-customer")
-    public ResponseEntity registerCustomer(@RequestBody@Valid CustomerDTO customerDTO){
-        authService.registerCustomer(customerDTO);
-        return ResponseEntity.status(200).body(new ApiResponse("new customer registered"));
-    }
-
-    //PERMIT ALL
-    @PostMapping("/register-employee")
-    public ResponseEntity registerEmployee(@RequestBody@Valid EmployeeDTO employeeDTO){
-        authService.registerEmployee(employeeDTO);
-        return ResponseEntity.status(200).body(new ApiResponse("new employee registered"));
-    }
-
-    //authority -> CUSTOMER
-    @PutMapping("/update-customer")
-    public ResponseEntity updateCustomer(@AuthenticationPrincipal User customer,@RequestBody@Valid CustomerDTO customerDTO){
-        authService.updateCustomer(customer.getId(), customerDTO);
-        return ResponseEntity.status(200).body(new ApiResponse("customer updated"));
-    }
-
-    //authority -> EMPLOYEE
-    @PutMapping("/update-employee")
-    public ResponseEntity updateEmployee(@AuthenticationPrincipal User employee,@RequestBody@Valid EmployeeDTO employeeDTO){
-        authService.updateEmployee(employee.getId(), employeeDTO);
-        return ResponseEntity.status(200).body(new ApiResponse("employee updated"));
     }
 
     //authority -> ADMIN

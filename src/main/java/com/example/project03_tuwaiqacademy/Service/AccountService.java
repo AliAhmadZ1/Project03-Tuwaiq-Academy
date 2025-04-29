@@ -2,9 +2,13 @@ package com.example.project03_tuwaiqacademy.Service;
 
 import com.example.project03_tuwaiqacademy.Api.ApiException;
 import com.example.project03_tuwaiqacademy.Model.Account;
+import com.example.project03_tuwaiqacademy.Model.Customer;
+import com.example.project03_tuwaiqacademy.Model.Employee;
 import com.example.project03_tuwaiqacademy.Model.User;
 import com.example.project03_tuwaiqacademy.Repository.AccountRepository;
 import com.example.project03_tuwaiqacademy.Repository.AuthRepository;
+import com.example.project03_tuwaiqacademy.Repository.CustomerRepository;
+import com.example.project03_tuwaiqacademy.Repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +21,36 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AuthRepository authRepository;
+    private final CustomerRepository customerRepository;
+    private final EmployeeRepository employeeRepository;
+
+
+    //authority -> CUSTOMER
+    public List<Account> getMyAccounts(Integer customer_id){
+        Customer customer = customerRepository.findCustomerById(customer_id);
+        if (customer==null)
+            throw new ApiException("customer not found");
+        return accountRepository.findMyAccounts(customer_id);
+    }
+
+
+    //authority -> CUSTOMER
+    public Account getAccountDetail(Integer customer_id,Integer account_id){
+        Customer customer = customerRepository.findCustomerById(customer_id);
+        if (customer==null)
+            throw new ApiException("customer not found");
+        Account account = accountRepository.findAccountById(account_id);
+        if (account==null)
+            throw new ApiException("account not found");
+        if (account.getCustomer().getId()!=customer_id)
+            throw new ApiException("this is not your account");
+        return account;
+    }
 
 
     //authority -> CUSTOMER
     public void createAccount(Integer customer_id){
-        User customer = authRepository.findUserById(customer_id);
+        Customer customer = customerRepository.findCustomerById(customer_id);
         if (customer==null)
             throw new ApiException("customer not found");
 
@@ -33,51 +62,66 @@ public class AccountService {
                 continue;
             }
         }
+
         account.setAccount_number(generatedAccountNumber);
         account.setBalance(0.0);
-        account.setCustomer(customer.getCustomer());
-        authRepository.save(customer);
+        account.setCustomer(customer);
+        customer.getAccounts().add(account);
+        customerRepository.save(customer);
         accountRepository.save(account);
     }
 
+
     //authority -> EMPLOYEE
     public void activateAccount(Integer employee_id,Integer account_id){
-        User employee = authRepository.findUserById(employee_id);
+        Employee employee = employeeRepository.findEmployeeById(employee_id);
         if (employee==null)
             throw new ApiException("no permission only for employees");
         Account account = accountRepository.findAccountById(account_id);
         if (account==null)
             throw new ApiException("account not found");
+        if (account.getIs_active())
+            throw new ApiException("is already activated");
         account.setIs_active(true);
         accountRepository.save(account);
     }
 
 
-    //authority -> CUSTOMER
-    public Account getAccountDetail(Integer customer_id,Integer account_id){
-        User customer = authRepository.findUserById(customer_id);
-        if (customer==null)
-            throw new ApiException("customer not found");
+    //authority -> EMPLOYEE
+    public void blockAccount(Integer employee_id,Integer account_id){
+        Employee employee = employeeRepository.findEmployeeById(employee_id);
+        if (employee==null)
+            throw new ApiException("no permission only for employees");
         Account account = accountRepository.findAccountById(account_id);
         if (account==null)
             throw new ApiException("account not found");
-        if (account.getCustomer().getId()!=customer_id)
-            throw new ApiException("this is not your account");
-        return account;
+        if (!account.getIs_active())
+            throw new ApiException("is already blocked");
+        account.setIs_active(false);
+        accountRepository.save(account);
     }
 
-    //authority -> CUSTOMER
-    public List<Account> getMyAccounts(Integer customer_id){
-        User customer = authRepository.findUserById(customer_id);
+
+    public void deleteAccount(Integer customer_id,Integer account_id){
+        Customer customer = customerRepository.findCustomerById(customer_id);
+        Account account = accountRepository.findAccountById(account_id);
         if (customer==null)
             throw new ApiException("customer not found");
-        return accountRepository.findMyAccounts(customer_id);
+        if (account==null)
+            throw new ApiException("account not found");
+        if (customer.getId()!=account.getCustomer().getId())
+            throw new ApiException("you didn't have permission to delete this account");
+        if (account.getBalance()>0)
+            throw new ApiException("your account does have money you can't delete it");
+        customer.getAccounts().remove(account);
+        customerRepository.save(customer);
+        accountRepository.delete(account);
     }
 
 
     //authority -> CUSTOMER
     public void depositMoney(Integer customer_id,Integer account_id,double amount){
-        User customer = authRepository.findUserById(customer_id);
+        Customer customer = customerRepository.findCustomerById(customer_id);
         if (customer==null)
             throw new ApiException("customer not found");
         Account account = accountRepository.findAccountById(account_id);
@@ -91,7 +135,7 @@ public class AccountService {
 
     //authority -> CUSTOMER
     public void withdrawMoney(Integer customer_id,Integer account_id,double amount){
-        User customer = authRepository.findUserById(customer_id);
+        Customer customer = customerRepository.findCustomerById(customer_id);
         if (customer==null)
             throw new ApiException("customer not found");
         Account account = accountRepository.findAccountById(account_id);
@@ -108,7 +152,7 @@ public class AccountService {
 
     //authority -> CUSTOMER
     public void transferBetweenAccounts(Integer customer_id,Integer from_account_id,Integer to_account_id, double amount){
-        User customer = authRepository.findUserById(customer_id);
+        Customer customer = customerRepository.findCustomerById(customer_id);
         if (customer==null)
             throw new ApiException("customer not found");
         Account fromAccount = accountRepository.findAccountById(from_account_id);
@@ -127,19 +171,6 @@ public class AccountService {
         accountRepository.save(toAccount);
     }
 
-
-
-    //authority -> EMPLOYEE
-    public void blockAccount(Integer employee_id,Integer account_id){
-        User employee = authRepository.findUserById(employee_id);
-        if (employee==null)
-            throw new ApiException("no permission only for employees");
-        Account account = accountRepository.findAccountById(account_id);
-        if (account==null)
-            throw new ApiException("account not found");
-        account.setIs_active(false);
-        accountRepository.save(account);
-    }
 
 
     // generate account number in format: "xxxx-xxxx-xxxx-xxxx"

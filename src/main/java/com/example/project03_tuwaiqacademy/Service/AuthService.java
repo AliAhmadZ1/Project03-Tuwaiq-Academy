@@ -39,80 +39,12 @@ public class AuthService {
         authRepository.save(user);
     }
 
-    //authority -> EMPLOYEE
-    public List<User> getAllCustomers(Integer employee_id){
-        User employee = authRepository.findUserById(employee_id);
-        if (employee==null)
-            throw new ApiException("no permission only for employees");
-        return authRepository.findCustomersByEmployee();
-    }
-
     //authority -> ADMIN
     public List<User> getAll(Integer admin_id){
         User admin = authRepository.findUserById(admin_id);
         if (admin==null)
             throw new ApiException("you don't have permission");
         return authRepository.findAll();
-    }
-
-    //PERMIT ALL
-    public void registerCustomer(CustomerDTO customerDTO){
-        User user = new User();
-        user.setRole("CUSTOMER");
-        user.setName(customerDTO.getName());
-        String hashPassword = new BCryptPasswordEncoder().encode(customerDTO.getPassword());
-        user.setPassword(hashPassword);
-        user.setEmail(customerDTO.getEmail());
-        user.setUsername(customerDTO.getUsername());
-
-        Customer customer = new Customer(null, customerDTO.getPhone_number(), user,null);
-        user.setCustomer(customer);
-        authRepository.save(user);
-    }
-
-    //PERMIT ALL
-    public void registerEmployee(EmployeeDTO employeeDTO){
-        User user = new User();
-        user.setRole("EMPLOYEE");
-        user.setName(employeeDTO.getName());
-        String hashPassword = new BCryptPasswordEncoder().encode(employeeDTO.getPassword());
-        user.setPassword(hashPassword);
-        user.setEmail(employeeDTO.getEmail());
-        user.setUsername(employeeDTO.getUsername());
-
-        Employee employee = new Employee(null, employeeDTO.getPosition(), employeeDTO.getSalary(),user);
-        user.setEmployee(employee);
-        authRepository.save(user);
-    }
-
-    //authority -> CUSTOMER
-    public void updateCustomer(Integer customer_id, CustomerDTO customerDTO){
-        User customer = authRepository.findUserById(customer_id);
-        if (customer==null)
-            throw new ApiException("customer not found");
-        customer.setName(customerDTO.getName());
-        customer.setUsername(customerDTO.getUsername());
-        String hashPassword = new BCryptPasswordEncoder().encode(customerDTO.getPassword());
-        customer.setPassword(hashPassword);
-        customer.setEmail(customerDTO.getEmail());
-        customer.getCustomer().setPhone_number(customerDTO.getPhone_number());
-
-        authRepository.save(customer);
-    }
-
-    //authority -> EMPLOYEE
-    public void updateEmployee(Integer employee_id, EmployeeDTO employeeDTO){
-        User employee = authRepository.findUserById(employee_id);
-        if (employee==null)
-            throw new ApiException("Employee not found");
-        employee.setName(employeeDTO.getName());
-        employee.setUsername(employeeDTO.getUsername());
-        String hashPassword = new BCryptPasswordEncoder().encode(employee.getPassword());
-        employee.setPassword(hashPassword);
-        employee.setEmail(employeeDTO.getEmail());
-        employee.getEmployee().setPosition(employeeDTO.getPosition());
-
-        authRepository.save(employee);
     }
 
     //authority -> ADMIN

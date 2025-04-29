@@ -1,6 +1,7 @@
 package com.example.project03_tuwaiqacademy.Controller;
 
 import com.example.project03_tuwaiqacademy.Api.ApiResponse;
+import com.example.project03_tuwaiqacademy.Model.Customer;
 import com.example.project03_tuwaiqacademy.Model.User;
 import com.example.project03_tuwaiqacademy.Service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,18 @@ public class AccountController {
 
 
     //authority -> CUSTOMER
+    @GetMapping("/get-accounts")
+    public ResponseEntity getMyAccounts(@AuthenticationPrincipal User customer){
+        return ResponseEntity.status(200).body(accountService.getMyAccounts(customer.getId()));
+    }
+
+    //authority -> CUSTOMER
+    @GetMapping("/get-account-detail/{account_id}")
+    public ResponseEntity getAccountDetails(@AuthenticationPrincipal User customer,@PathVariable Integer account_id){
+        return ResponseEntity.status(200).body(accountService.getAccountDetail(customer.getId(), account_id));
+    }
+
+    //authority -> CUSTOMER
     @PostMapping("/create-account")
     public ResponseEntity createAccount(@AuthenticationPrincipal User customer){
         accountService.createAccount(customer.getId());
@@ -30,17 +43,19 @@ public class AccountController {
         return ResponseEntity.status(200).body(new ApiResponse("account activated"));
     }
 
-    //authority -> CUSTOMER
-    @GetMapping("/get-account-detail/{account_id}")
-    public ResponseEntity getAccountDetails(@AuthenticationPrincipal User customer,@PathVariable Integer account_id){
-        return ResponseEntity.status(200).body(accountService.getAccountDetail(customer.getId(), account_id));
+    //authority -> EMPLOYEE
+    @PutMapping("/block-account/{account_id}")
+    public ResponseEntity blockAccount(@AuthenticationPrincipal User employee,@PathVariable Integer account_id){
+        accountService.blockAccount(employee.getId(), account_id);
+        return ResponseEntity.status(200).body(new ApiResponse("account blocked!"));
     }
 
-    //authority -> CUSTOMER
-    @GetMapping("/get-accounts")
-    public ResponseEntity getMyAccounts(@AuthenticationPrincipal User customer){
-        return ResponseEntity.status(200).body(accountService.getMyAccounts(customer.getId()));
+    @DeleteMapping("/delete-account/{account_id}")
+    public ResponseEntity deleteAccount(@AuthenticationPrincipal Customer customer,@PathVariable Integer account_id){
+        accountService.deleteAccount(customer.getId(), account_id);
+        return ResponseEntity.status(200).body(new ApiResponse("account deleted"));
     }
+
 
     //authority -> CUSTOMER
     @PutMapping("/deposit/{account_id}/{amount}")
@@ -61,13 +76,6 @@ public class AccountController {
     public ResponseEntity transfer(@AuthenticationPrincipal User customer,@PathVariable Integer from,@PathVariable Integer to,@PathVariable double amount){
         accountService.transferBetweenAccounts(customer.getId(), from, to, amount);
         return ResponseEntity.status(200).body(new ApiResponse("transfer successfully!!"));
-    }
-
-    //authority -> EMPLOYEE
-    @PutMapping("/block-account/{account_id}")
-    public ResponseEntity blockAccount(@AuthenticationPrincipal User employee,@PathVariable Integer account_id){
-        accountService.blockAccount(employee.getId(), account_id);
-        return ResponseEntity.status(200).body(new ApiResponse("account blocked!"));
     }
 
 }
