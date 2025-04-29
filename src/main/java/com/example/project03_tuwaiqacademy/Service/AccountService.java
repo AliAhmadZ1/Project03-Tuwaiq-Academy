@@ -66,7 +66,7 @@ public class AccountService {
         account.setAccount_number(generatedAccountNumber);
         account.setBalance(0.0);
         account.setCustomer(customer);
-        customer.getAccounts().add(account);
+//        customer.getAccounts().add(account);
         customerRepository.save(customer);
         accountRepository.save(account);
     }
