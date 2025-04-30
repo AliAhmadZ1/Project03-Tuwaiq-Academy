@@ -51,7 +51,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/delete-account/{account_id}")
-    public ResponseEntity deleteAccount(@AuthenticationPrincipal Customer customer,@PathVariable Integer account_id){
+    public ResponseEntity deleteAccount(@AuthenticationPrincipal User customer,@PathVariable Integer account_id){
         accountService.deleteAccount(customer.getId(), account_id);
         return ResponseEntity.status(200).body(new ApiResponse("account deleted"));
     }

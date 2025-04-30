@@ -3,22 +3,29 @@ package com.example.project03_tuwaiqacademy.Service;
 import com.example.project03_tuwaiqacademy.Api.ApiException;
 import com.example.project03_tuwaiqacademy.DTO.CustomerDTO;
 import com.example.project03_tuwaiqacademy.DTO.EmployeeDTO;
+import com.example.project03_tuwaiqacademy.Model.Account;
 import com.example.project03_tuwaiqacademy.Model.Customer;
 import com.example.project03_tuwaiqacademy.Model.Employee;
 import com.example.project03_tuwaiqacademy.Model.User;
+import com.example.project03_tuwaiqacademy.Repository.AccountRepository;
 import com.example.project03_tuwaiqacademy.Repository.AuthRepository;
+import com.example.project03_tuwaiqacademy.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final AuthRepository authRepository;
+    private final CustomerRepository customerRepository;
+    private final AccountRepository accountRepository;
 
 
     //PERMIT ALL
@@ -55,7 +62,11 @@ public class AuthService {
         User user = authRepository.findUserById(user_id);
         if (user==null)
             throw new ApiException("user not found");
+        Customer customer = customerRepository.findCustomerById(user_id);
+        Set<Account> accounts = customer.getAccounts();
 
+//        accountRepository.deleteAll(accounts);
+        customerRepository.delete(customer);
         authRepository.delete(user);
     }
 
